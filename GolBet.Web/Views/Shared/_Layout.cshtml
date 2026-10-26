@@ -1,5 +1,5 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,14 +40,14 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()
             @if (TempData["Success"] is string message)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-        ✅ @message
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    ✅ @message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
 
         </main>
 
@@ -55,7 +55,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; @DateTime.Now.Year - GolBet · Simulador académico hola
+            &copy; @DateTime.Now.Year - GolBet · Simulador académico
 
         </div>
     </footer>

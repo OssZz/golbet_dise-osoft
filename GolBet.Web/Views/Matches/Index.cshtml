@@ -1,41 +1,66 @@
-﻿@* GolBet.Web/Views/Matches/Index.cshtml *@
+@* GolBet.Web/Views/Matches/Index.cshtml *@
 @using GolBet.Entities.Enums
 @using GolBet.Web.Helpers
 @model IEnumerable<GolBet.Services.DTOs.MatchDto>
 @{
     ViewData["Title"] = "Partidos";
-}
-@{
     var current = (MatchStatus?)ViewBag.CurrentStatus;
+    var search = ViewBag.CurrentSearch as string;
 }
-<div class="d-flex gap-2 flex-wrap mb-4">
-    <a asp-action="Index"
-       class="btn btn-sm @(current is null ? "btn-success" : "btn-outline-success")">
-        Todos
-    </a>
-    <a asp-action="Index" asp-route-status="@MatchStatus.Scheduled"
-       class="btn btn-sm @(current == MatchStatus.Scheduled ? "btn-success" : "btn-outline-success")">
-        Programados
-    </a>
-    <a asp-action="Index" asp-route-status="@MatchStatus.InProgress"
-       class="btn btn-sm @(current == MatchStatus.InProgress ? "btn-success" : "btn-outline-success")">
-        En juego
-    </a>
-    <a asp-action="Index" asp-route-status="@MatchStatus.Finished"
-       class="btn btn-sm @(current == MatchStatus.Finished ? "btn-success" : "btn-outline-success")">
-        Finalizados
-    </a>
-</div>
 
-
-<h2 class="mb-4">⚽ Cartelera de partidos</h2>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>⚽ Cartelera de partidos</h2>
     <a asp-action="Create" class="btn btn-success">+ Nuevo partido</a>
 </div>
 
+@* Search form (GET): keeps the active status filter through a hidden input *@
+<form asp-action="Index" method="get" class="d-flex gap-2 mb-3">
+    @if (current.HasValue)
+    {
+        <input type="hidden" name="status" value="@current.Value" />
+    }
+    <input type="text" name="search" value="@search" class="form-control"
+           placeholder="Buscar equipo (ej. nacional)..." />
+    <button type="submit" class="btn btn-success">Buscar</button>
+</form>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+@* Status filters: keep the active search through asp-route-search *@
+<div class="d-flex gap-2 flex-wrap mb-4">
+    <a asp-action="Index" asp-route-search="@search"
+       class="btn btn-sm @(current is null ? "btn-success" : "btn-outline-success")">
+        Todos
+    </a>
+    <a asp-action="Index" asp-route-status="@MatchStatus.Scheduled" asp-route-search="@search"
+       class="btn btn-sm @(current == MatchStatus.Scheduled ? "btn-success" : "btn-outline-success")">
+        Programados
+    </a>
+    <a asp-action="Index" asp-route-status="@MatchStatus.InProgress" asp-route-search="@search"
+       class="btn btn-sm @(current == MatchStatus.InProgress ? "btn-success" : "btn-outline-success")">
+        En juego
+    </a>
+    <a asp-action="Index" asp-route-status="@MatchStatus.Finished" asp-route-search="@search"
+       class="btn btn-sm @(current == MatchStatus.Finished ? "btn-success" : "btn-outline-success")">
+        Finalizados
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-4">
+        @if (!string.IsNullOrWhiteSpace(search))
+        {
+            <p class="mb-3">No hay partidos para “@search”</p>
+        }
+        else
+        {
+            <p class="mb-3">No hay partidos con este filtro</p>
+        }
+        <a asp-action="Index" class="btn btn-success">Volver a la cartelera de partidos</a>
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
     @foreach (var match in Model)
     {
         <div class="col">
@@ -106,8 +131,13 @@
                             </div>
                         </div>
                     </div>
+                    <a asp-action="Detail" asp-route-id="@match.Id"
+                       class="btn btn-sm btn-outline-secondary w-100 mt-2">
+                        Ver detalle
+                    </a>
                 </div>
             </div>
         </div>
     }
-</div>
+    </div>
+}
